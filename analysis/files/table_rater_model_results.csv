@@ -1,0 +1,20 @@
+"domain","model","R","Fixed_Effect","AIC","BIC"
+"animals","associative_NA_NA_NA_NA_NA_NA_NA_NA_NA","0.41 [0.39,0.46]",0.43,574.09,597.39
+"animals","categorical_NA_NA_NA_NA_NA_NA_NA_NA_NA","0.35 [0.33,0.4]",0.4,813.91,837.22
+"animals","delta_rise_0_75_fall_0_5_NA_NA_NA","0.32 [0.31,0.37]",0.38,963.53,986.83
+"animals","multimodaldelta_alpha_1_0_rise_0_75_fall_0_5","0.32 [0.31,0.37]",0.38,963.53,986.83
+"animals","multimodal_alpha_0_8_NA_NA_NA_NA_NA_NA","0.19 [0.18,0.24]",0.25,1404.93,1428.23
+"animals","simdrop_NA_NA_NA_NA_NA_NA_NA_NA_NA","0.19 [0.18,0.24]",0.25,1407.66,1430.96
+"animals","svd_cosine_0_9_gtom_0_8_NA_NA_NA","0.11 [0.1,0.15]",0.26,1637.88,1661.18
+"foods","associative_NA_NA_NA_NA_NA_NA_NA_NA_NA","0.44 [0.42,0.48]",0.47,503.81,527.28
+"foods","multimodaldelta_alpha_0_9_rise_0_75_fall_0_5","0.33 [0.31,0.38]",0.36,1071.87,1095.34
+"foods","delta_rise_0_75_fall_0_5_NA_NA_NA","0.32 [0.31,0.37]",0.35,1118.58,1142.06
+"foods","categorical_NA_NA_NA_NA_NA_NA_NA_NA_NA","0.25 [0.24,0.3]",0.32,1254.34,1277.81
+"foods","multimodal_alpha_0_9_NA_NA_NA_NA_NA_NA","0.2 [0.19,0.25]",0.23,1494.77,1518.24
+"foods","simdrop_NA_NA_NA_NA_NA_NA_NA_NA_NA","0.2 [0.19,0.25]",0.23,1497.81,1521.29
+"foods","svd_cosine_0_9_gtom_0_30000000000000004_NA_NA_NA","0.11 [0.11,0.16]",0.16,1757.62,1781.1
+"occupations","delta_rise_0_75_fall_0_5_NA_NA_NA","0.28 [0.27,0.34]",0.32,797.13,819.39
+"occupations","multimodaldelta_alpha_0_9_rise_0_75_fall_0_5","0.28 [0.27,0.34]",0.32,795.9,818.16
+"occupations","multimodal_alpha_0_9_NA_NA_NA_NA_NA_NA","0.17 [0.16,0.23]",0.21,1038.06,1060.32
+"occupations","simdrop_NA_NA_NA_NA_NA_NA_NA_NA_NA","0.17 [0.16,0.23]",0.21,1039.02,1061.28
+"occupations","svd_cosine_0_8_gtom_0_30000000000000004_NA_NA_NA","0.07 [0.07,0.13]",0.1,1240.8,1263.06
