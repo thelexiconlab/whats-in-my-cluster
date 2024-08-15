@@ -1,9 +1,11 @@
 # whats-in-my-cluster
 
 This repository contains scripts to reproduce the analyses presented in the paper:
+```
+What’s in my cluster? Evaluating automated clustering methods to understand idiosyncratic search behavior in verbal fluency.*
+```
 
-- *What’s in my cluster? Evaluating automated clustering methods to understand idiosyncratic search behavior in verbal fluency.*
-
+The repository is organized as follows:
 - `analysis`: contains the code for the analysis of participant and rater data
 - `forager_test`: contains code for using the python package *forager* to obtain predicted clusters and model estimates
 
