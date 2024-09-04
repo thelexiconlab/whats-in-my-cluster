@@ -211,7 +211,7 @@ clusterplot =switch_sample %>%
          axis.text.x = element_text(face = "bold", size = rel(1.2)))
 
 ## saved plot skeleton, modified/added features in powerpoint
-#ggsave('plots/switch-example.pdf', clusterplot)  
+#ggsave('plots/fig1-switch-example.pdf', clusterplot)  
 ```
 
 # individual designations
@@ -351,7 +351,7 @@ scale_y_continuous(breaks = c("0"= 0.0, ".25"=0.25, ".5" = 0.50,".75" = 0.75, "1
           axis.text.x = element_text(size = 8),
           axis.text.y = element_text(size = 8))
 
-# ggsave('plots/multimodal_heatmap_participant.pdf', 
+# ggsave('plots/fig2-multimodal_heatmap_participant.pdf', 
 #        units = 'in', width = 10, height = 4)
 ```
 
@@ -685,7 +685,7 @@ plot_all_lexical %>%
     axis.title.y = element_text(size =rel(1.5)),
         plot.title = element_text(hjust = .5, size = rel(1.2)))
 
-#ggsave('plots/lexical_plot.pdf', units = "in",width = 12, height = 4)
+#ggsave('plots/fig3-lexical_plot.pdf', units = "in",width = 12, height = 4)
 ```
 
 ## ratings lexical model
@@ -973,7 +973,7 @@ idio_lexical %>%
         axis.title = element_text(size =rel(2)),
         plot.title = element_text(hjust = .5, size = rel(1.2)))
 
-#ggsave('plots/idio_lexical_plot.pdf', units = "in",width = 15, height = 4)
+#ggsave('plots/fig4-idio_lexical_plot.pdf', units = "in",width = 15, height = 4)
 
 ```
 
@@ -1001,7 +1001,7 @@ LEA_idio %>%
         axis.title = element_text(size =rel(2)),
         plot.title = element_text(hjust = .5, size = rel(1.2)))
 
-#ggsave('plots/idio_distribution.pdf', units = "in")
+#ggsave('plots/fig5-idio_distribution.pdf', units = "in")
 
 ```
 
@@ -1120,7 +1120,7 @@ ggplot(combined_data, aes(x = value, fill = model)) +
   labs(x = "R-squared", y = "Frequency") +
   theme_clean()
 # save skeleton to pdf, rearrange legend in powerpoint
-#ggsave('plots/idio_permutations.pdf', units = "in")
+#ggsave('plots/fig6-idio_permutations.pdf', units = "in")
 
 
 
@@ -1166,7 +1166,7 @@ ggplot(aes(x= items, y = avg_idio, group = domain, color = domain)) +
         plot.title = element_text(hjust = .5, size = rel(1.2)))
 ```
 
-## participant clusters
+## Figure 7: participant clusters
 
 ```{r}
 LEA_num_clusters = idio_data %>% 
@@ -1201,7 +1201,7 @@ idio_clusters_plot <- LEA_num_clusters %>%
 # Print the plot
 print(idio_clusters_plot)
 
-#ggsave('plots/idio_clusters_plot.pdf', idio_clusters_plot, height = 8, width = 8)  
+#ggsave('plots/fig7-idio_clusters_plot.pdf', idio_clusters_plot, height = 8, width = 8)  
 ```
 
 
