@@ -153,7 +153,7 @@ occupations = read_csv("../forager_test/output/occupations_forager/switch_result
 all_domains = rbind(animals, foods, occupations)
 ```
 
-## visualize cluster/switch designations
+## Figure 1: visualize cluster/switch designations
 ```{r}
 lexical_sample = read_csv("../forager_test/output/animals_forager/lexical_results.csv") %>%
   filter(Subject == 50020) %>%
@@ -274,43 +274,52 @@ LEA_predictor_columns <- setdiff(names(LEA_cleaned_data),
                                  c("participant_designated_switch", "subject", "domain",
                                                     "response_number", "cluster"))
 ## THIS PORTION TAKES A LONG TIME TO RUN ##
+## UNCOMMENT TO RUN
 ## results have been saved into a file that can be directly read in and analyzed (see next chunk) ## 
-set.seed(123)
-glmer_model_results <- LEA_cleaned_data %>%
-  filter(participant_designated_switch != 2) %>%
-  group_by(domain) %>%
-  summarise(model = map(setNames(LEA_predictor_columns, LEA_predictor_columns), 
-                        ~ fit_model(df = cur_data(), 
-                                    column = .x, type = "glmer", dv = "participant_designated_switch", 
-                                   var_cutoff = .015)))
-
-individual_model_results = glmer_model_results %>% unnest() %>%
-  mutate(Predictor = ifelse(Predictor == "norms_associative", "associative", 
-                            ifelse(Predictor == "norms_categorical", "categorical", Predictor))) %>%
-  separate(Predictor, sep = "_", 
-           into = c("Predictor", "param1", "p1_0", "p1_val", "param2", 
-                    "p2_0", "p2_val", "param3", "p3_0", "p3_val")) 
-
-individual_model_results_table = individual_model_results %>%
-  filter(Predictor != "exp")%>%
-  group_by(domain, Predictor) %>%
-  slice_max(R_squared) %>%
-  unite("model", Predictor:p3_val) %>%
-  select(domain, model, R_squared, R_squared_CI_lower, R_squared_CI_upper, Fixed_Effect, AIC, BIC) %>%
-  mutate_if(is.numeric, round, 2)%>%
-  arrange(domain, desc(R_squared)) %>%
-  mutate(R = paste(R_squared, " [", R_squared_CI_lower, ",", R_squared_CI_upper, "]", sep = "")) %>%
-  select(domain, model, R, Fixed_Effect, AIC, BIC)
-
-write.csv(individual_model_results,
-          file = "files/individual_model_results.csv", row.names = FALSE)
-
-write.csv(individual_model_results_table,
-          file = "files/table_individual_model_results.csv", row.names = FALSE)
+# set.seed(123)
+# glmer_model_results <- LEA_cleaned_data %>%
+#   filter(participant_designated_switch != 2) %>%
+#   group_by(domain) %>%
+#   summarise(model = map(setNames(LEA_predictor_columns, LEA_predictor_columns), 
+#                         ~ fit_model(df = cur_data(), 
+#                                     column = .x, type = "glmer", dv = "participant_designated_switch", 
+#                                    var_cutoff = .015)))
+# 
+# individual_model_results = glmer_model_results %>% unnest() %>%
+#   mutate(Predictor = ifelse(Predictor == "norms_associative", "associative", 
+#                             ifelse(Predictor == "norms_categorical", "categorical", Predictor))) %>%
+#   separate(Predictor, sep = "_", 
+#            into = c("Predictor", "param1", "p1_0", "p1_val", "param2", 
+#                     "p2_0", "p2_val", "param3", "p3_0", "p3_val")) 
+# 
+# individual_model_results_table = individual_model_results %>%
+#   filter(Predictor != "exp")%>%
+#   group_by(domain, Predictor) %>%
+#   slice_max(R_squared) %>%
+#   unite("model", Predictor:p3_val) %>%
+#   select(domain, model, R_squared, R_squared_CI_lower, R_squared_CI_upper, Fixed_Effect, AIC, BIC) %>%
+#   mutate_if(is.numeric, round, 2)%>%
+#   arrange(domain, desc(R_squared)) %>%
+#   mutate(R = paste(R_squared, " [", R_squared_CI_lower, ",", R_squared_CI_upper, "]", sep = "")) %>%
+#   select(domain, model, R, Fixed_Effect, AIC, BIC)
+# 
+# write.csv(individual_model_results,
+#           file = "files/individual_model_results.csv", row.names = FALSE)
+# 
+# write.csv(individual_model_results_table,
+#           file = "files/table_individual_model_results.csv", row.names = FALSE)
 
 ```
 
-## multimodaldelta model heatmap
+## Table 1 results
+
+```{r}
+individual_model_results_table = read_csv("files/table_individual_model_results.csv")
+individual_model_results_table
+```
+
+
+## Figure 2: multimodaldelta model heatmap
 
 ```{r}
 individual_model_results = read_csv("files/individual_model_results.csv")
@@ -342,8 +351,8 @@ scale_y_continuous(breaks = c("0"= 0.0, ".25"=0.25, ".5" = 0.50,".75" = 0.75, "1
           axis.text.x = element_text(size = 8),
           axis.text.y = element_text(size = 8))
 
-ggsave('plots/multimodal_heatmap_participant.pdf', 
-       units = 'in', width = 10, height = 4)
+# ggsave('plots/multimodal_heatmap_participant.pdf', 
+#        units = 'in', width = 10, height = 4)
 ```
 
 ## multiple regression
@@ -361,9 +370,7 @@ m3 = glmer(data = a, participant_designated_switch ~ norms_associative + norms_c
 m4 = glmer(data = a, participant_designated_switch ~ norms_associative + norms_categorical+ simdrop  + (1|subject), family = binomial )
 m5 = glmer(data = a, participant_designated_switch ~ norms_associative + norms_categorical+ simdrop + delta_rise_0_75_fall_0_75 + 
              (1|subject), family = binomial )
-# multimodal delta alpha = 1 so not running
-# m6 = glmer(data = a, participant_designated_switch ~ norms_associative + norms_categorical+ simdrop + delta_rise_0_75_fall_0_75 + 
-#   multimodaldelta_alpha_0_8_rise_1_0_fall_0_25 + (1|subject), family = binomial )
+# multimodal delta alpha = 1 so not running (redundant with delta rise)
 m7 = glmer(data = a, participant_designated_switch ~ norms_associative + norms_categorical+ simdrop + delta_rise_0_75_fall_0_75  + multimodal_alpha_0_8 + (1|subject), family = binomial )
 m8 = glmer(data = a, participant_designated_switch ~ norms_associative + norms_categorical+ simdrop + delta_rise_0_75_fall_0_75 + multimodal_alpha_0_8+ svd_cosine_0_9_gtom_0_7000000000000001 + (1|subject), family = binomial )
 
@@ -420,7 +427,7 @@ occ_multiple_regression = tidy(m8) %>% mutate(domain = "occupations", R = R)
 
 ```
 
-### combined
+### Table 2: combined multiple regression
 
 ```{r}
 multiple_regression_all = rbind(animals_multiple_regression, foods_multiple_regression, 
@@ -430,6 +437,7 @@ multiple_regression_all = rbind(animals_multiple_regression, foods_multiple_regr
    mutate(across(c(R,estimate, std.error, statistic), ~ round(., 2))) %>%
   mutate(across(c(p.value), ~ round(., 3)))
   
+multiple_regression_all
 ```
 
 
@@ -512,12 +520,6 @@ actual_sample_IDs = trials %>% pull(ID) %>% unique()
 
 nonfirst_trials = trials %>%
   filter(response!= 2)
-
-# sent to richard lim on May 30 2024 for idiosyncratic analyses on zemla data
-# x = nonfirst_trials %>% filter(domain == "animals")  %>% rename(current_word = cluster) %>%
-#   mutate(prev_word = sub(",.*", "", current_pair)) %>%
-#   select(ID, subject, prev_word, current_word, response_number, response, rt)
-# write.csv(x, file = "pairwise_ratings.csv", row.names = FALSE)
 ```
 
 ## demographics
@@ -544,14 +546,10 @@ age_data = demo_data[grep('^\\{"Age', demo_data$response), ] %>%
                                 ifelse(Gender %in% c("transgender male", "transgender"), "transgender", Gender))))
 ## AGE ##
 age_data %>% summarize(m = mean(Age, na.rm = TRUE), sd = sd(Age, na.rm = TRUE))
-
-## GENDER ##
-age_data %>% group_by(Gender) %>% 
-  summarize(count = n()) %>%
-   mutate(percent = count / sum(count) * 100)
-
 ## EDUCATION ##
 age_data %>% summarize(m = mean(Education, na.rm = TRUE), sd = sd(Education, na.rm = TRUE))
+
+
 
 
 ## RACE ##
@@ -569,11 +567,15 @@ race_data = demo_data[grep('^\\{"Race', demo_data$response), ]%>%
                                                         "American Indian/Alaskan Native",
                                                         "More/Other")))))
 
-race_data %>%
+View(race_data %>%
   group_by(RaceCat) %>% 
   summarize(count = n()) %>%
-   mutate(percent = count / sum(count) * 100)
+   mutate(percent = count / sum(count) * 100))
 
+## GENDER ##
+View(age_data %>% group_by(Gender) %>% 
+  summarize(count = n()) %>%
+   mutate(percent = count / sum(count) * 100))
 
 
 ```
@@ -595,7 +597,7 @@ trials_agg = trials_agg %>%
 
 ```
 
-## plot: ratings with lexical similarity
+## Figure 3: ratings with lexical similarity
 ```{r}
 food_lexical = read_csv("../forager_test/output/foods_forager/lexical_results.csv") %>% 
   mutate(domain = "foods")
@@ -683,7 +685,7 @@ plot_all_lexical %>%
     axis.title.y = element_text(size =rel(1.5)),
         plot.title = element_text(hjust = .5, size = rel(1.2)))
 
-ggsave('plots/lexical_plot.pdf', units = "in",width = 12, height = 4)
+#ggsave('plots/lexical_plot.pdf', units = "in",width = 12, height = 4)
 ```
 
 ## ratings lexical model
@@ -691,16 +693,16 @@ ggsave('plots/lexical_plot.pdf', units = "in",width = 12, height = 4)
 ratings_lexical_model_semantic = lmer(data = plot_all_lexical %>% filter(cue == "semantic similarity"),
                              mean_response ~ value*domain + (domain | Subject))
 car::Anova(ratings_lexical_model_semantic)
-summary(ratings_lexical_model_semantic)
+nobs(ratings_lexical_model_semantic)
 
 ratings_lexical_model_phon = lmer(data = plot_all_lexical %>% filter(cue == "phonological similarity"),
                              mean_response ~ value*domain + (domain | Subject))
 car::Anova(ratings_lexical_model_phon)
-summary(ratings_lexical_model_phon)
+nobs(ratings_lexical_model_phon)
 
 ratings_lexical_model_frequency = lmer(data = plot_all_lexical %>% filter(cue == "word frequency"),
                              mean_response ~ value*domain + (domain | Subject))
-summary(ratings_lexical_model_frequency)
+nobs(ratings_lexical_model_frequency)
 car::Anova(ratings_lexical_model_frequency)
 
 
@@ -728,38 +730,47 @@ rater_cleaned_data <- rater_data %>%
 rater_predictor_columns <- setdiff(names(rater_cleaned_data), c("mean_response", "subject", "domain", "response_number",
                                                   "current_pair", "num_responses", "cluster"))
 
+### NOTE: THIS PART TAKES A LONG TIME TO RUN ###
+### files have been saved and can be directly imported and analyzed ###
+### UNCOMMENT TO RUN ###
+# rater_model_results <- rater_cleaned_data %>%
+#   group_by(domain) %>%
+#   summarise(
+#     model = map(setNames(rater_predictor_columns, rater_predictor_columns), 
+#                 ~ fit_model(df = cur_data(), column = .x, type = "lmer", dv = "mean_response", 
+#                             var_cutoff = .015))
+#   )
+# 
+# rater_model_results_unnested = rater_model_results %>% unnest() %>%
+#   mutate(Predictor = ifelse(Predictor == "norms_associative", "associative", 
+#                         ifelse(Predictor == "norms_categorical", "categorical", Predictor))) %>%
+#   separate(Predictor, sep = "_", into = c("Predictor", "param1", "p1_0", "p1_val", 
+#                                           "param2", "p2_0", "p2_val", "param3", "p3_0", "p3_val"))
+# 
+# rater_model_results_table = rater_model_results_unnested %>%
+#   filter(Predictor != "exp")%>%
+#   group_by(domain, Predictor) %>%
+#   slice_max(R_squared) %>%
+#   unite("model", Predictor:p3_val) %>%
+#   select(domain, model, R_squared, R_squared_CI_lower, R_squared_CI_upper, Fixed_Effect, AIC, BIC) %>%
+#   mutate_if(is.numeric, round, 2)%>%
+#   arrange(domain, desc(R_squared)) %>%
+#   mutate(R = paste(R_squared, " [", R_squared_CI_lower, ",", R_squared_CI_upper, "]", sep = "")) %>%
+#   select(domain, model, R, Fixed_Effect, AIC, BIC)
+# 
+# write.csv(rater_model_results_unnested, file = "files/rater_model_results.csv", row.names = FALSE)
+# 
+# write.csv(rater_model_results_table, file = "files/table_rater_model_results.csv", row.names = FALSE)
 
-rater_model_results <- rater_cleaned_data %>%
-  group_by(domain) %>%
-  summarise(
-    model = map(setNames(rater_predictor_columns, rater_predictor_columns), 
-                ~ fit_model(df = cur_data(), column = .x, type = "lmer", dv = "mean_response", 
-                            var_cutoff = .015))
-  )
-
-rater_model_results_unnested = rater_model_results %>% unnest() %>%
-  mutate(Predictor = ifelse(Predictor == "norms_associative", "associative", 
-                        ifelse(Predictor == "norms_categorical", "categorical", Predictor))) %>%
-  separate(Predictor, sep = "_", into = c("Predictor", "param1", "p1_0", "p1_val", 
-                                          "param2", "p2_0", "p2_val", "param3", "p3_0", "p3_val"))
-
-rater_model_results_table = rater_model_results_unnested %>%
-  filter(Predictor != "exp")%>%
-  group_by(domain, Predictor) %>%
-  slice_max(R_squared) %>%
-  unite("model", Predictor:p3_val) %>%
-  select(domain, model, R_squared, R_squared_CI_lower, R_squared_CI_upper, Fixed_Effect, AIC, BIC) %>%
-  mutate_if(is.numeric, round, 2)%>%
-  arrange(domain, desc(R_squared)) %>%
-  mutate(R = paste(R_squared, " [", R_squared_CI_lower, ",", R_squared_CI_upper, "]", sep = "")) %>%
-  select(domain, model, R, Fixed_Effect, AIC, BIC)
-
-write.csv(rater_model_results_unnested, file = "files/rater_model_results.csv", row.names = FALSE)
-
-write.csv(rater_model_results_table, file = "files/table_rater_model_results.csv", row.names = FALSE)
 
 
+```
 
+## Table 3
+
+```{r}
+rater_model_results_table = read_csv("files/table_rater_model_results.csv")
+rater_model_results_table
 ```
 
 ## multimodaldelta model heatmap
@@ -802,7 +813,7 @@ scale_y_continuous(breaks = c("0"= 0.0, ".25"=0.25, ".5" = 0.50,".75" = 0.75, "1
           axis.text.x = element_text(size = 8),
           axis.text.y = element_text(size = 8))
 
-ggsave('plots/multimodal_heatmap_rater.pdf', units = 'in', width = 10, height = 4)
+#ggsave('plots/multimodal_heatmap_rater.pdf', units = 'in', width = 10, height = 4)
 ```
 
 
@@ -888,6 +899,15 @@ sd(total_n$N)
 
 ```
 
+## Table 4: participant data
+
+```{r}
+
+View(idio_data %>% filter(subject == 50003) %>%
+  filter(response_number %in% 45:52))
+```
+
+
 ## lexical markers
 ```{r}
 # are people who are more idiosyncratic use lexical cues differently? YES
@@ -913,24 +933,24 @@ idio_lexical = idio_data %>%
 
 idio_lexical_semantic = lmer(data = idio_lexical %>% filter(cue == "semantic similarity"), 
                           idiosyncratic ~ value*domain + (domain|Subject))
-summary(idio_lexical_semantic)
+nobs(idio_lexical_semantic)
 car::Anova(idio_lexical_semantic)
 
 idio_lexical_phonological = lmer(data = idio_lexical %>% filter(cue == "phonological similarity"), 
                           idiosyncratic ~ value*domain + (domain|Subject))
-summary(idio_lexical_phonological)
+nobs(idio_lexical_phonological)
 car::Anova(idio_lexical_phonological)
 
 idio_lexical_frequency = lmer(data = idio_lexical %>% filter(cue == "word frequency"), 
                           idiosyncratic ~ value*domain + (domain|Subject))
-summary(idio_lexical_frequency)
+nobs(idio_lexical_frequency)
 car::Anova(idio_lexical_frequency)
 
 
 ```
 
 
-## plot
+## Figure 4: idiosyncratic lexical markers
 ```{r}
 idio_lexical %>%
   ggplot(aes(x = value, y =idiosyncratic, group = domain, color = domain )) +
@@ -953,11 +973,11 @@ idio_lexical %>%
         axis.title = element_text(size =rel(2)),
         plot.title = element_text(hjust = .5, size = rel(1.2)))
 
-ggsave('plots/idio_lexical_plot.pdf', units = "in",width = 15, height = 4)
+#ggsave('plots/idio_lexical_plot.pdf', units = "in",width = 15, height = 4)
 
 ```
 
-## idio distribution
+## Figure 5: idio distribution
 
 ```{r}
 LEA_idio = idio_data %>% group_by(domain, subject) %>%
@@ -981,7 +1001,7 @@ LEA_idio %>%
         axis.title = element_text(size =rel(2)),
         plot.title = element_text(hjust = .5, size = rel(1.2)))
 
-ggsave('plots/idio_distribution.pdf', units = "in")
+#ggsave('plots/idio_distribution.pdf', units = "in")
 
 ```
 
@@ -1002,87 +1022,96 @@ domain_idio_agg = LEA_idio %>%
   select(subject, domain, avg_idio) %>%
   pivot_wider(names_from = domain, values_from = avg_idio)
 
+### NOTE: THIS CHUNK TAKES A LONG TIME ### 
+### FILES HAVE BEEN SAVED AND CAN BE IMPORTED FOR ANALYSES (SEE NEXT CHUNK) ### 
+### UNCOMMENT TO RUN ###
+
 # Step 2: Train your original models and get Rsquared
-model_animals_foods <- summary(lm(animals ~ foods, data = domain_idio_agg))$r.squared
-model_animals_occupations <- summary(lm(animals ~ occupations, data = domain_idio_agg))$r.squared
+# model_animals_foods <- summary(lm(animals ~ foods, data = domain_idio_agg))$r.squared
+# model_animals_occupations <- summary(lm(animals ~ occupations, data = domain_idio_agg))$r.squared
+# 
+# model_foods_animals <- summary(lm(foods ~ animals, data = domain_idio_agg))$r.squared
+# model_foods_occupations <- summary(lm(foods ~ occupations, data = domain_idio_agg))$r.squared
+# 
+# model_occupations_animals <- summary(lm(occupations ~ animals, data = domain_idio_agg))$r.squared
+# model_occupations_foods <- summary(lm(occupations ~ foods, data = domain_idio_agg))$r.squared
+# 
+# # Set seed for reproducibility
+# set.seed(123)
+# 
+# # Assuming 'domains' is a vector of domain names
+# domains <- c("animals", "foods", "occupations")
+# 
+# # Initialize a matrix to store R-squared values
+# num_permutations <- 1000
+# r_squared_values <- matrix(NA, nrow = num_permutations * length(domains), ncol = 3)
+# 
+# row_counter <- 1
+# 
+# for (constant_column in domains) {
+#   
+#   shuffled_columns = domains[domains != constant_column]
+# 
+#   for (i in 1:num_permutations) {
+#     
+#     shuffled_column_1 = sample(domain_idio_agg %>% pull(shuffled_columns[1]))
+#     shuffled_column_2 = sample(domain_idio_agg %>% pull(shuffled_columns[2]))
+# 
+#     df_shuffled = domain_idio_agg %>% select(subject, constant_column)%>%
+#       cbind(shuffled_column_1, shuffled_column_2)
+#       
+#     formula1 = paste(constant_column, "~ shuffled_column_1")
+#     formula2 = paste(constant_column, "~ shuffled_column_2")
+#   
+#     
+#     model_1 <- lm(formula1, data = df_shuffled)
+#     model_2 <- lm(formula2,  data = df_shuffled)
+#   
+#     r_squared_values[row_counter, 1] <- constant_column
+#     r_squared_values[row_counter, 2] <- summary(model_1)$r.squared
+#     r_squared_values[row_counter, 3] <- summary(model_2)$r.squared
+#   
+#     row_counter <- row_counter + 1
+#   }
+# }
+# 
+# 
+# r_squared_values = as.data.frame(r_squared_values)
+# 
+# animals_data = r_squared_values %>% filter(V1 == "animals") %>%
+#   pivot_longer(names_to = "model", cols = V2:V3) %>%
+#   mutate(datatype = "permuted")%>%
+#   rbind(data.frame(V1 = "animals", model = "V2", value= model_animals_foods, datatype = "original"), 
+#                    data.frame(V1 = "animals", model = "V3", value= model_animals_occupations, datatype = "original") )%>%
+#   mutate(value = as.numeric(value), model = as.factor(model), datatype = as.factor(datatype))%>%
+#   mutate(model = ifelse(model == "V2", "animals ~ foods", "animals ~ occupations"))
+# 
+# foods_data = r_squared_values %>% filter(V1 == "foods") %>%
+#   pivot_longer(names_to = "model", cols = V2:V3) %>%
+#   mutate(datatype = "permuted")%>%
+#   rbind(data.frame(V1 = "foods", model = "V2", value= model_foods_animals, datatype = "original"), 
+#                    data.frame(V1 = "foods", model = "V3", value= model_foods_occupations, datatype = "original") )%>%
+#   mutate(value = as.numeric(value), model = as.factor(model), datatype = as.factor(datatype))%>%
+#   mutate(model = ifelse(model == "V2", "foods ~ animals", "foods ~ occupations"))
+# 
+# occupations_data = r_squared_values %>% filter(V1 == "occupations") %>%
+#   pivot_longer(names_to = "model", cols = V2:V3) %>%
+#   mutate(datatype = "permuted")%>%
+#   rbind(data.frame(V1 = "occupations", model = "V2", value= model_occupations_animals, datatype = "original"), 
+#                 data.frame(V1 = "occupations", model = "V3", value= model_occupations_foods, datatype = "original") )%>%
+#   mutate(value = as.numeric(value), model = as.factor(model), datatype = as.factor(datatype))%>%
+#   mutate(model = ifelse(model == "V2", "occupations ~ animals", "occupations ~ foods"))
+# 
+# combined_data= rbind(animals_data, foods_data, occupations_data)  %>%
+#   rename(domain = "V1")
+# 
+# write.csv(combined_data, file = "files/scrambled_idiosyncratic.csv", row.names = FALSE)
+```
 
-model_foods_animals <- summary(lm(foods ~ animals, data = domain_idio_agg))$r.squared
-model_foods_occupations <- summary(lm(foods ~ occupations, data = domain_idio_agg))$r.squared
+### Figure 6 + permutation test
+```{r}
 
-model_occupations_animals <- summary(lm(occupations ~ animals, data = domain_idio_agg))$r.squared
-model_occupations_foods <- summary(lm(occupations ~ foods, data = domain_idio_agg))$r.squared
-
-# Set seed for reproducibility
-set.seed(123)
-
-# Assuming 'domains' is a vector of domain names
-domains <- c("animals", "foods", "occupations")
-
-# Initialize a matrix to store R-squared values
-num_permutations <- 1000
-r_squared_values <- matrix(NA, nrow = num_permutations * length(domains), ncol = 3)
-
-row_counter <- 1
-
-for (constant_column in domains) {
-  
-  shuffled_columns = domains[domains != constant_column]
-
-  for (i in 1:num_permutations) {
-    
-    shuffled_column_1 = sample(domain_idio_agg %>% pull(shuffled_columns[1]))
-    shuffled_column_2 = sample(domain_idio_agg %>% pull(shuffled_columns[2]))
-
-    df_shuffled = domain_idio_agg %>% select(subject, constant_column)%>%
-      cbind(shuffled_column_1, shuffled_column_2)
-      
-    formula1 = paste(constant_column, "~ shuffled_column_1")
-    formula2 = paste(constant_column, "~ shuffled_column_2")
-  
-    
-    model_1 <- lm(formula1, data = df_shuffled)
-    model_2 <- lm(formula2,  data = df_shuffled)
-  
-    r_squared_values[row_counter, 1] <- constant_column
-    r_squared_values[row_counter, 2] <- summary(model_1)$r.squared
-    r_squared_values[row_counter, 3] <- summary(model_2)$r.squared
-  
-    row_counter <- row_counter + 1
-  }
-}
-
-
-r_squared_values = as.data.frame(r_squared_values)
-
-animals_data = r_squared_values %>% filter(V1 == "animals") %>%
-  pivot_longer(names_to = "model", cols = V2:V3) %>%
-  mutate(datatype = "permuted")%>%
-  rbind(data.frame(V1 = "animals", model = "V2", value= model_animals_foods, datatype = "original"), 
-                   data.frame(V1 = "animals", model = "V3", value= model_animals_occupations, datatype = "original") )%>%
-  mutate(value = as.numeric(value), model = as.factor(model), datatype = as.factor(datatype))%>%
-  mutate(model = ifelse(model == "V2", "animals ~ foods", "animals ~ occupations"))
-
-foods_data = r_squared_values %>% filter(V1 == "foods") %>%
-  pivot_longer(names_to = "model", cols = V2:V3) %>%
-  mutate(datatype = "permuted")%>%
-  rbind(data.frame(V1 = "foods", model = "V2", value= model_foods_animals, datatype = "original"), 
-                   data.frame(V1 = "foods", model = "V3", value= model_foods_occupations, datatype = "original") )%>%
-  mutate(value = as.numeric(value), model = as.factor(model), datatype = as.factor(datatype))%>%
-  mutate(model = ifelse(model == "V2", "foods ~ animals", "foods ~ occupations"))
-
-occupations_data = r_squared_values %>% filter(V1 == "occupations") %>%
-  pivot_longer(names_to = "model", cols = V2:V3) %>%
-  mutate(datatype = "permuted")%>%
-  rbind(data.frame(V1 = "occupations", model = "V2", value= model_occupations_animals, datatype = "original"), 
-                data.frame(V1 = "occupations", model = "V3", value= model_occupations_foods, datatype = "original") )%>%
-  mutate(value = as.numeric(value), model = as.factor(model), datatype = as.factor(datatype))%>%
-  mutate(model = ifelse(model == "V2", "occupations ~ animals", "occupations ~ foods"))
-
-combined_data= rbind(animals_data, foods_data, occupations_data)  %>%
-  rename(domain = "V1")
-
-write.csv(combined_data, file = "files/scrambled_idiosyncratic.csv", row.names = FALSE)
-
+combined_data = read_csv("files/scrambled_idiosyncratic.csv")
 ggplot(combined_data, aes(x = value, fill = model)) +
   geom_histogram(binwidth = 0.01, position = "dodge") +
   facet_wrap(~domain, ncol = 1, scales = "free_y") +
@@ -1091,7 +1120,7 @@ ggplot(combined_data, aes(x = value, fill = model)) +
   labs(x = "R-squared", y = "Frequency") +
   theme_clean()
 # save skeleton to pdf, rearrange legend in powerpoint
-ggsave('plots/idio_permutations.pdf', units = "in")
+#ggsave('plots/idio_permutations.pdf', units = "in")
 
 
 
@@ -1148,7 +1177,7 @@ LEA_num_clusters = idio_data %>%
 
 idio_switch_model_participant = lm(data =LEA_num_clusters , 
                        avg_idio ~ n_clusters*domain)
-summary(idio_switch_model_participant)
+nobs(idio_switch_model_participant)
 car::Anova(idio_switch_model_participant)
 
 model_predictions = predict(idio_switch_model_participant, newdata = LEA_num_clusters)
@@ -1172,11 +1201,13 @@ idio_clusters_plot <- LEA_num_clusters %>%
 # Print the plot
 print(idio_clusters_plot)
 
-ggsave('plots/idio_clusters_plot.pdf', idio_clusters_plot, height = 8, width = 8)  
+#ggsave('plots/idio_clusters_plot.pdf', idio_clusters_plot, height = 8, width = 8)  
 ```
 
 
 # strategies
+
+## consistency
 
 ```{r}
 strategies = read_csv("../data/ID_strategies_long.csv") %>%
@@ -1205,14 +1236,18 @@ strategies %>%
         statistic = map_dbl(answer, "statistic"),
         p.value = map_dbl(answer, "p.value")) %>%
   select(subjects, raters, kappa_value, statistic,p.value)
+```
 
+## Table 5 (counts)
+```{r}
 strategies = strategies %>% 
   mutate(used = ifelse(Nancy == 1 | AK == 1, 1, 0))
 
 counts = strategies %>% 
   group_by(category) %>%
   summarize(n_participants = sum(used)) %>%
-  mutate(percent = n_participants/220)
+  mutate(percent = n_participants/220) %>% 
+  arrange(desc(percent))
 
 counts
 ```
