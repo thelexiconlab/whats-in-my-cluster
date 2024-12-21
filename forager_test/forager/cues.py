@@ -213,3 +213,4 @@ class phonology_funcs:
 # print("wordbreak of " + w1 + ": ", phonology_funcs.wordbreak(w1)[0])
 # print("wordbreak of " + w2 + ": ", phonology_funcs.wordbreak(w2)[0])
 # print("Normalized edit distance between " + w1 + " and " + w2 + ": " , phonology_funcs.normalized_edit_distance(phonology_funcs.wordbreak(w1)[0], phonology_funcs.wordbreak(w2)[0]))
+
